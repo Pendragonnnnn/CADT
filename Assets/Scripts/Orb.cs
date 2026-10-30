@@ -26,6 +26,9 @@ public class Orb : MonoBehaviour
     private int clickIndex;
     private float hideTime = -1f;
 
+    private Camera mainCamera;
+    private Vector3 mouseOffset;
+    private float zCoord;
     void Awake()
     {
         basePosition = transform.position;
@@ -46,8 +49,22 @@ public class Orb : MonoBehaviour
         clickIndex = (clickIndex + 1) % clickColors.Length;
         GetComponent<Renderer>().material.color = clickColors[clickIndex];
         Debug.Log($"[Orb] Clicked → {clickColors[clickIndex]}");
+
+        if (mainCamera == null) mainCamera = Camera.main;
+        zCoord = mainCamera.WorldToScreenPoint(transform.position).z;
+        mouseOffset = transform.position - GetMouseAsWorldPoint();
     }
 
+    private void OnMouseDrag()
+    {
+        basePosition = GetMouseAsWorldPoint() + mouseOffset;
+    }
+    private Vector3 GetMouseAsWorldPoint()
+    {
+        Vector3 mousePoint = Input.mousePosition;
+        mousePoint.z = zCoord;
+        return mainCamera.ScreenToWorldPoint(mousePoint);
+    }
     // NOTE: The player script collects orbs in its OnTriggerEnter. This script
     // only handles looking pretty, being clicked, and bobbing.
 }

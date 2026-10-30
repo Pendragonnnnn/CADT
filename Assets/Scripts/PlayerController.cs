@@ -17,6 +17,17 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 6f;
 
+    [Header("Camera")]
+    [SerializeField] private Vector3 cameraOffset = new Vector3(0f, 2f, -3f);
+    [SerializeField] private float cameraSmoothSpeed = 5f;
+
+    [Header("Camera Zoom (Stretch)")]
+    [SerializeField] private float minZoom = 2f;
+    [SerializeField] private float maxZoom = 10f;
+    [SerializeField] private float scrollSensitivity = 5f;
+    private float currentZoomDistance;
+
+
     [Header("Lab wiring (drag your objects here)")]
     [SerializeField] private GameObject orbPrefab;   // TODO 5: used to spawn a bonus orb
     [SerializeField] private Transform cameraTransform; // used by TODO 3 (camera follow)
@@ -26,6 +37,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        currentZoomDistance = cameraOffset.magnitude;
     }
 
     void Start()
@@ -36,6 +48,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandleMovement();
+        HandleZoom();
     }
 
     private void HandleMovement()
@@ -51,12 +64,52 @@ public class PlayerController : MonoBehaviour
 
     // ---------------------------------------------------------------
     // TODO 1 (OnCollisionEnter): log the name of any wall you bump.
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Bumped into: " + collision.gameObject.name);
+    }
     // TODO 2 (OnTriggerEnter): if other.CompareTag("Orb"), Destroy the orb
     //       and Debug.Log the collection. (Orb prefab already tagged "Orb".)
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Orb"))
+        {
+            Debug.Log("Collected orb: " + other.gameObject.name);
+            Destroy(other.gameObject);
+        }
+    }
     // TODO 3 (LateUpdate): move cameraTransform to
     //       player position + offset so it follows you smoothly.
+    private void LateUpdate()
+    {
+        if (cameraTransform != null)
+        {
+            Vector3 dynamicOffset = cameraOffset.normalized * currentZoomDistance;
+            Vector3 targetPosition = transform.position + dynamicOffset;
+
+            cameraTransform.position = Vector3.Lerp(cameraTransform.position, targetPosition, cameraSmoothSpeed * Time.deltaTime);
+        }
+    }
     // TODO 4 (OnMouseDown is on the Orb script, not here — see Orb.cs.)
     // TODO 5 (OnDestroy): when the Player is destroyed, Instantiate one
     //       bonus orbPrefab at your last position.
     // ---------------------------------------------------------------
+    private void OnDestroy()
+    {
+        if (orbPrefab != null)
+        {
+            Instantiate(orbPrefab, transform.position, Quaternion.identity);
+        }
+    }
+
+    private void HandleZoom()
+    {
+        // Scroll to zoom between minZoom and maxZoom
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll != 0f)
+        {
+            currentZoomDistance -= scroll * scrollSensitivity;
+            currentZoomDistance = Mathf.Clamp(currentZoomDistance, minZoom, maxZoom);
+        }
+    }
 }
