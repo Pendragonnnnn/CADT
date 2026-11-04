@@ -21,26 +21,31 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private Transform target;     // drag the Player here
 
     [Header("Framing")]
+    [SerializeField] private Vector3 offset = new Vector3(0f, 12f, -8f);
     [SerializeField] private float followSharpness = 5f;
-
-    [Header("Camera Zoom")]
-    [SerializeField] private float cameraDistance = 3f;   // Current distance
-    [SerializeField] private float minDistance = 1.5f;   // Closest the camera can zoom in
-    [SerializeField] private float maxDistance = 8f;     // Farthest the camera can zoom out
-    [SerializeField] private float scrollSensitivity = 5f; // Speed of the zoom
 
     [Header("Zoom (stretch)")]
     [SerializeField] private float minZoom = 6f;
     [SerializeField] private float maxZoom = 18f;
+    [SerializeField] private float scrollSensitivity = 5f;
 
-    private void Update()
+    void LateUpdate()
     {
-        // Scroll to zoom
+        if (target == null) return;
+        Vector3 desired = target.position + offset;
+        transform.position = Vector3.Lerp(transform.position, desired, followSharpness * Time.deltaTime);
+    }
+
+    void Update()
+    {
+        // TODO 8: Zoom with scroll wheel
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll != 0f)
         {
-            cameraDistance -= scroll * scrollSensitivity;
-            cameraDistance = Mathf.Clamp(cameraDistance, minDistance, maxDistance); // Keeps it within safe limits
+            float dist = offset.magnitude;
+            dist -= scroll * scrollSensitivity;
+            dist = Mathf.Clamp(dist, minZoom, maxZoom);
+            offset = offset.normalized * dist;
         }
     }
 }
