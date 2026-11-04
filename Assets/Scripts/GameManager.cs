@@ -42,28 +42,22 @@ public class GameManager : MonoBehaviour
 
     void OnGUI()
     {
-        // Immediate-mode UI: runs several times per frame, so keep it cheap.
-        GUI.Label(new Rect(12, 10, 400, 30), $"Orbs collected: {collected} / {totalOrbs}", new GUIStyle(GUI.skin.label) { fontSize = 20 });
+       
 
         // TODO 7: when collected >= totalOrbs, draw a large centered "YOU WIN!" label.
-        if (collected >= totalOrbs)
+         if (collected >= totalOrbs && totalOrbs > 0)
+    {
+        GUIStyle winStyle = new GUIStyle(GUI.skin.label)
         {
-            GUIStyle winStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 40,
-                alignment = TextAnchor.MiddleCenter
-            };
-
-            // Center the box on the screen (Screen.width / 2, Screen.height / 2)
-            float width = 400f;
-            float height = 100f;
-            Rect rect = new Rect((Screen.width - width) / 2f, (Screen.height - height) / 2f, width, height);
-
-            GUI.Label(rect, "YOU WIN!", winStyle);
-        }
-        else
-        {
-            GUI.Label(new Rect(12, 10, 400, 30), $"Orbs collected: {collected} / {totalOrbs}", new GUIStyle(GUI.skin.label) { fontSize = 20 });
-        }
+            fontSize = 40,
+            alignment = TextAnchor.MiddleCenter
+        };
+        GUI.Label(new Rect((Screen.width - 400) / 2, (Screen.height - 100) / 2, 400, 100), "YOU WIN!", winStyle);
     }
+    else
+    {
+        GUI.Label(new Rect(12, 10, 400, 30), $"Orbs collected: {collected} / {totalOrbs}",
+                  new GUIStyle(GUI.skin.label) { fontSize = 20 });
+    }
+}
 }

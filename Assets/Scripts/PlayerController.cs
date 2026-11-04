@@ -71,13 +71,15 @@ public class PlayerController : MonoBehaviour
     // TODO 2 (OnTriggerEnter): if other.CompareTag("Orb"), Destroy the orb
     //       and Debug.Log the collection. (Orb prefab already tagged "Orb".)
     private void OnTriggerEnter(Collider other)
+    
+{
+    if (other.CompareTag("Orb"))
     {
-        if (other.CompareTag("Orb"))
-        {
-            Debug.Log("Collected orb: " + other.gameObject.name);
-            Destroy(other.gameObject);
-        }
+        Debug.Log("Collected orb: " + other.gameObject.name);
+        GameManager.Instance.Collect(); 
+        Destroy(other.gameObject);
     }
+}
     // TODO 3 (LateUpdate): move cameraTransform to
     //       player position + offset so it follows you smoothly.
     private void LateUpdate()
