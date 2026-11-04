@@ -15,7 +15,7 @@ using UnityEngine;
 public class Orb : MonoBehaviour
 {
     [Header("Click palette")]
-    [SerializeField] private Color[] clickColors = { Color.cyan, Color.magenta, Color.yellow };
+    [SerializeField] private Color[] clickColors = { Color.red, Color.magenta, Color.yellow };
 
     [Header("Bob & spin")]
     [SerializeField] private float bobHeight = 0.15f;
