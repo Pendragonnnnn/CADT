@@ -33,7 +33,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cameraTransform; // used by TODO 3 (camera follow)
 
     private Rigidbody rb;
+    private bool isQuitting;
 
+private void OnApplicationQuit()
+{
+    isQuitting = true;
+}
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -96,13 +101,18 @@ public class PlayerController : MonoBehaviour
     // TODO 5 (OnDestroy): when the Player is destroyed, Instantiate one
     //       bonus orbPrefab at your last position.
     // ---------------------------------------------------------------
-    private void OnDestroy()
+   private void OnDestroy()
+{
+    if (isQuitting || !Application.isPlaying)
     {
-        if (orbPrefab != null)
-        {
-            Instantiate(orbPrefab, transform.position, Quaternion.identity);
-        }
+        return;
     }
+
+    if (orbPrefab != null)
+    {
+        Instantiate(orbPrefab, transform.position, Quaternion.identity);
+    }
+}
 
     private void HandleZoom()
     {
